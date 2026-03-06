@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swipe - UConn Dining, Simplified</title>
+  <meta name="description" content="Smart nutrition tracking for every meal on campus. Health scores, allergen alerts, and real-time menus for UConn students.">
+
+  <!-- OG Meta Tags -->
+  <meta property="og:title" content="Swipe - UConn Dining, Simplified">
+  <meta property="og:description" content="Smart nutrition tracking for every meal on campus. Health scores, allergen alerts, and real-time menus for UConn students.">
+  <meta property="og:image" content="ad.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Swipe - UConn Dining, Simplified">
+  <meta name="twitter:description" content="Smart nutrition tracking for every meal on campus. Health scores, allergen alerts, and real-time menus for UConn students.">
+  <meta name="twitter:image" content="ad.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:        #16a34a;
+      --green-light:  #22c55e;
+      --green-dark:   #14532d;
+      --green-mid:    #166534;
+      --green-tint:   #f0fdf4;
+      --green-tint-2: #dcfce7;
+      --text:         #0d1117;
+      --text-muted:   #6b7280;
+      --text-faint:   #9ca3af;
+      --border:       #e5e7eb;
+      --white:        #ffffff;
+      --radius:       14px;
+      --radius-lg:    20px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      background-size: 128px 128px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ─── Nav ─────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 max(20px, 4%);
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .wordmark {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -0.04em;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .wordmark-dot {
+      width: 9px;
+      height: 9px;
+      background: var(--green);
+      border-radius: 50%;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-link {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-link:hover { color: var(--text); }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 18px;
+      background: var(--green);
+      color: var(--white);
+      font-size: 0.78rem;
+      font-weight: 600;
+      border-radius: 999px;
+      text-decoration: none;
+      transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+    }
+    .nav-cta:hover {
+      background: var(--green-mid);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    }
+
+    /* ─── Hero (split layout: text left, image right) ─────── */
+    .hero {
+      min-height: calc(100vh - 140px);
+      display: flex;
+      align-items: center;
+      padding: 48px max(20px, 2.5%) 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated bg blobs */
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(22, 163, 74, 0.1) 0%, transparent 70%);
+      top: -100px;
+      left: 20%;
+      animation: heroGlow 8s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(34, 197, 94, 0.07) 0%, transparent 70%);
+      bottom: -100px;
+      right: 5%;
+      animation: heroGlow2 10s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes heroGlow {
+      from { transform: scale(1); opacity: 1; }
+      to   { transform: scale(1.15); opacity: 0.6; }
+    }
+    @keyframes heroGlow2 {
+      from { transform: scale(1); }
+      to   { transform: scale(1.2) translate(-30px, -15px); }
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+    }
+
+    .hero-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--green-mid);
+      background: var(--white);
+      border: 1px solid #bbf7d0;
+      padding: 5px 12px 5px 7px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 6px rgba(22, 163, 74, 0.1);
+      width: fit-content;
+    }
+
+    .badge-dot {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      background: var(--green-tint-2);
+      border-radius: 50%;
+      font-size: 0.65rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.25rem, 4vw, 4rem);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.045em;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .hero h1 .gradient-text {
+      background: linear-gradient(135deg, var(--green) 0%, #15803d 40%, #22c55e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 520px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .hero-dl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 11px 22px;
+      background: var(--green);
+      color: var(--white);
+      border-radius: 999px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.16);
+      animation: btnPulse 3s ease-in-out infinite;
+    }
+    .hero-dl-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(22,163,74,0.3);
+      animation: none;
+    }
+
+    @keyframes btnPulse {
+      0%, 100% { box-shadow: 0 2px 12px rgba(22,163,74,0.2), 0 0 0 0 rgba(22,163,74,0.3); }
+      50%       { box-shadow: 0 2px 12px rgba(22,163,74,0.2), 0 0 0 8px rgba(22,163,74,0); }
+    }
+
+    .hero-dl-btn-icon { font-size: 1.15rem; line-height: 1; }
+    .hero-dl-btn-label { display: flex; flex-direction: column; line-height: 1.2; }
+    .hero-dl-btn-sub { font-size: 0.6rem; font-weight: 500; opacity: 0.6; letter-spacing: 0.04em; text-transform: uppercase; }
+    .hero-dl-btn-store { font-size: 0.9375rem; font-weight: 800; }
+
+    .hero-dl-btn--gplay {
+      background: transparent;
+      border: 1.5px solid #bbf7d0;
+      color: var(--green-mid);
+      box-shadow: none;
+      animation: none;
+      cursor: default;
+    }
+    .hero-dl-btn--gplay:hover {
+      transform: none;
+      box-shadow: none;
+      animation: none;
+    }
+    .hero-dl-btn--gplay .hero-dl-btn-icon { opacity: 0.5; }
+    .hero-dl-btn--gplay .hero-dl-btn-sub { opacity: 0.8; }
+
+
+    .hero-visual {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 58%;
+      margin-bottom: 32px;
+    }
+
+    .hero-visual-glow {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      height: 120px;
+      background: radial-gradient(ellipse, rgba(22,163,74,0.2) 0%, transparent 70%);
+      filter: blur(20px);
+      pointer-events: none;
+    }
+
+    .hero-visual img {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      display: block;
+      border-radius: 16px;
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.12),
+        0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    /* ─── Bottom bar: stats + footer combined ─────────────── */
+    .bottom-bar {
+      background: var(--green-dark);
+      padding: 0 max(20px, 2.5%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bottom-bar::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 30% 50%, rgba(22,163,74,0.2) 0%, transparent 60%),
+                  radial-gradient(ellipse at 70% 50%, rgba(34,197,94,0.12) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .bottom-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,0.08);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .stat {
+      text-align: center;
+      padding: 20px 12px;
+      background: var(--green-dark);
+    }
+
+    .stat-num {
+      display: block;
+      font-size: 1.75rem;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 4px;
+      color: var(--white);
+    }
+
+    .stat-lbl {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* Footer row */
+    .footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .footer-wordmark {
+      font-size: 0.9rem;
+      font-weight: 900;
+      color: var(--white);
+      text-decoration: none;
+      letter-spacing: -0.03em;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .footer-wordmark-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green-light);
+      border-radius: 50%;
+    }
+
+    .footer-copy {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.3);
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .footer-links a {
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      font-size: 0.75rem;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+    .footer-links a:hover { color: var(--white); }
+
+    /* ─── Responsive ─────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .hero { min-height: auto; padding: 64px max(20px, 4%) 24px; }
+      .hero-visual { width: 80%; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .nav-link { display: none; }
+    }
+
+    @media (max-width: 500px) {
+      .hero h1 { font-size: 1.75rem; }
+      .hero-visual { width: 95%; }
+      .hero-actions { flex-direction: column; align-items: center; }
+      .stats-row { grid-template-columns: repeat(2, 1fr); }
+      .footer-row { flex-direction: column; align-items: flex-start; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav aria-label="Main navigation">
+    <a href="#" class="wordmark" aria-label="Swipe home">
+      <span class="wordmark-dot" aria-hidden="true"></span>
+      Swipe
+    </a>
+    <div class="nav-right">
+      <a href="https://seanhoward-dev.github.io/swipe-support/" class="nav-link" target="_blank" rel="noopener noreferrer">Privacy</a>
+      <a href="https://github.com/seanhoward-dev/Swipe/issues" class="nav-link" target="_blank" rel="noopener noreferrer">Support</a>
+      <a href="https://apps.apple.com/us/app/swipe-uconn-dining/id6758175549"
+         class="nav-cta"
+         aria-label="Download Swipe on the App Store">
+        &#63743; Download
+      </a>
+    </div>
+  </nav>
+
+  <!-- HERO: everything above the fold -->
+  <section class="hero" aria-label="Hero">
+    <div class="hero-grid">
+
+      <!-- Image on top -->
+      <div class="hero-visual">
+        <div class="hero-visual-glow" aria-hidden="true"></div>
+        <img src="ad.png" alt="Swipe app — real-time menus and health scores for UConn dining halls" loading="eager">
+      </div>
+
+      <!-- Text + CTA + features below -->
+      <div class="hero-text">
+        <h1>
+          Know what you're eating at
+          <span class="gradient-text">every dining location.</span>
+        </h1>
+
+        <div class="hero-actions">
+          <a href="https://apps.apple.com/us/app/swipe-uconn-dining/id6758175549"
+             class="hero-dl-btn"
+             aria-label="Download Swipe on the App Store">
+            <span class="hero-dl-btn-icon" aria-hidden="true">&#63743;</span>
+            <span class="hero-dl-btn-label">
+              <span class="hero-dl-btn-sub">Download on the</span>
+              <span class="hero-dl-btn-store">App Store</span>
+            </span>
+          </a>
+          <span class="hero-dl-btn hero-dl-btn--gplay" aria-label="Google Play coming soon">
+            <svg class="hero-dl-btn-icon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-.61-.92V2.734a1 1 0 0 1 .609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zM5.864 2.658L16.8 9.49l-2.302 2.302-8.634-8.634zm12.8 7.752l2.346 1.358a1 1 0 0 1 0 1.732l-2.346 1.358-2.537-2.537 2.537-2.911z"/></svg>
+            <span class="hero-dl-btn-label">
+              <span class="hero-dl-btn-sub">Coming soon on</span>
+              <span class="hero-dl-btn-store">Google Play</span>
+            </span>
+          </span>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BOTTOM BAR: stats + footer in one compact strip -->
+  <div class="bottom-bar">
+    <div class="bottom-inner">
+      <div class="stats-row" role="region" aria-label="App statistics">
+        <div class="stat">
+          <span class="stat-num">550<span style="font-size:0.6em;opacity:0.7">+</span></span>
+          <span class="stat-lbl">Downloads</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">19</span>
+          <span class="stat-lbl">Dining Locations</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">1.6K<span style="font-size:0.6em;opacity:0.7">+</span></span>
+          <span class="stat-lbl">Menu Items</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">5&#9733;</span>
+          <span class="stat-lbl">App Store Rating</span>
+        </div>
+      </div>
+
+      <footer>
+        <div class="footer-row">
+          <div class="footer-left">
+            <a href="#" class="footer-wordmark">
+              <span class="footer-wordmark-dot" aria-hidden="true"></span>
+              Swipe
+            </a>
+            <span class="footer-copy">&copy; 2026 Swipe Dining &mdash; Made with care at UConn.</span>
+          </div>
+          <nav class="footer-links" aria-label="Footer navigation">
+            <a href="https://apps.apple.com/us/app/swipe-uconn-dining/id6758175549" target="_blank" rel="noopener noreferrer">App Store</a>
+            <a href="https://seanhoward-dev.github.io/swipe-support/" target="_blank" rel="noopener noreferrer">Privacy</a>
+            <a href="https://github.com/seanhoward-dev/Swipe/issues" target="_blank" rel="noopener noreferrer">Support</a>
+          </nav>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+</body>
+</html>
